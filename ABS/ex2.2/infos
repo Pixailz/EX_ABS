@@ -20,13 +20,13 @@ for i in $(seq 1 ${#user_logedin[@]}); do
 	fi
 done
 
-# save to a log file
-cat <<-EOFLOG > "${LOG_FILE}"
-[DATE AND TIME] : ${date_and_time}
-[USER LOGED IN]
-$(for i in $(seq 1 ${#user_logedin[@]}); do
-	((i--))
-	printf -- "                - %s\n" "${user_logedin[${i}]}"
-done)
-[UPTIME       ] : ${uptime}
-EOFLOG
+# save to a log file, thank to code the block
+{
+	printf "[DATE AND TIME] : %s\n" "${date_and_time}"
+	printf "[USER LOGED IN]\n"
+	for i in $(seq 1 ${#user_logedin[@]}); do
+		((i--))
+		printf -- "                - %s\n" "${user_logedin[${i}]}"
+	done
+	printf "[UPTIME       ] : ${uptime}\n"
+} > "${LOG_FILE}"

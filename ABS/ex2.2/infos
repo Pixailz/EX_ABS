@@ -1,0 +1,32 @@
+#!/bin/bash -eu
+
+# where the log file is saved
+LOG_FILE="./logfile"
+
+# get date formated
+date_and_time=$(date +"%T %d/%m/%y")
+
+# get uniq logged in user, as array
+user_logedin=($(who -u | perl -pnE "s|(^.*?) .*|\1|g" | uniq))
+
+# pretty format uptime
+uptime=$(uptime -p)
+
+# format USER_LOGEDIN, if
+for i in $(seq 1 ${#user_logedin[@]}); do
+	((i--))
+	if [ "${user_logedin[${i}]}" == "$(whoami)" ]; then
+		user_logedin[${i}]="${user_logedin[${i}]} (you)"
+	fi
+done
+
+# save to a log file
+cat <<-EOFLOG > "${LOG_FILE}"
+[DATE AND TIME] : ${date_and_time}
+[USER LOGED IN]
+$(for i in $(seq 1 ${#user_logedin[@]}); do
+	((i--))
+	printf -- "                - %s\n" "${user_logedin[${i}]}"
+done)
+[UPTIME       ] : ${uptime}
+EOFLOG

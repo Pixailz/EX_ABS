@@ -1,1 +1,5 @@
+# ignore all logfile
 **/logfile
+
+# ignore test file in root folder
+test

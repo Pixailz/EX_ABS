@@ -1,0 +1,133 @@
+#!/bin/bash
+
+## (#) COMMENT
+
+# This line is a comment.
+
+echo "A comment will follow." # Comment here.
+#                            ^ Note whitespace before #
+	# A tab precedes this comment.
+
+initial=( `cat "$startfile" | sed -e '/#/d' | tr -d '\n' |\
+# Delete lines containing '#' comment character.
+           sed -e 's/\./\. /g' -e 's/_/_ /g'` )
+# Excerpted from life.sh script
+
+echo "The # here does not begin a comment."
+echo 'The # here does not begin a comment.'
+echo The \# here does not begin a comment.
+echo The # here begins a comment.
+
+echo ${PATH#*:}       # Parameter substitution, not a comment.
+echo $(( 2#101011 ))  # Base conversion, not a comment.
+
+# Thanks, S.C.
+
+## (;) SEMICOLON
+
+echo hello; echo there
+
+if [ -x "$filename" ]; then    #  Note the space after the semicolon.
+#+                   ^^
+  echo "File $filename exists."; cp $filename $filename.bak
+else   #                       ^^
+  echo "File $filename not found."; touch $filename
+fi; echo "File test complete."
+
+## (;;) CASE TERMINATOR
+case "$variable" in
+  abc)  echo "\$variable = abc" ;;
+  xyz)  echo "\$variable = xyz" ;;
+esac
+
+## (;;&),(;&) FALLTHROUGHT CASE TERMINATOR
+case "$1" in
+  1)  echo "[PRINT]" ;;& # will continue to evaluate next pattern search
+  2)  echo "[ERROR]" ;& # will execute next statement
+  3)  echo "[WARN]"  ;&
+  4)  echo "[DEBUG]" ;&
+esac
+
+## (.) DOT
+
+### as a command
+#  . ./script_with_usefull_fonction_to_use
+
+### as a part of a filename
+#  touch .hidden_file
+#  ls
+#> special_char 2/ 3/
+#  ls -a
+#> special_char .hidden_file 2/ 3/
+
+### PWD and parent directory
+#  cp /usr/bin/utils . # copy /usr/bin/utils to the current directory
+#  cp /usr/bin/utils .. # copy /usr/bin/utils to the parent directory
+
+## (") PARTIAL QUOTING
+echo "user : ${USER}"
+
+## (') FULL QUOTING
+echo 'use arg one like so: "$1"'
+
+## (,) COMMA OPERATOR
+let "t2 = ((a = 9, 15 / 3))"
+
+#  can also be use to substitute string
+#+ the best exemple is to copy .env.template to .env
+cp .env{.template,}
+#  will produce the same as cp .env.template .env
+
+## (,,),(,) LOWERCASE SUBSTITUTION
+
+string="AbcD"
+echo ${string,}   # will lower only the first char
+echo ${string,,}  # will lower all the string
+
+## (\) ESCAPE
+echo "var = \"value\""
+
+## (`) OLD COMMAND SUBSTITUTION
+echo "pwd = `pwd`"
+
+## (:) NO OP COMMAND
+
+# return true (or 0)
+:
+echo $? #0
+
+while :; do
+  echo "infinite loop"
+done
+
+# can be usefull for place holder, for exemple checking default value
+
+# assign if variable ar empty
+: ${arg_1=default_value}
+
+# check if variable are not null
+: ${HOSTNAME?} ${USER?} ${EMAIL?}
+
+# combined with redirection it can be more powerfull for emptying a file
+
+cat /dev/null > file_name # do a fork
+: > file_name             # don't do a fork since ":" is a builtin
+
+# field separator in PATH
+# bash$ echo $PATH
+# /usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/sbin:/usr/sbin:/usr/games
+
+# is a correct function name (good for obfuscating)
+:() {
+  echo this function name is ${FUNCNAME}
+}
+
+:
+
+# can be a placeholder for empty function
+todo_later ()
+{
+  :
+}
+
+## (!) NEGATION

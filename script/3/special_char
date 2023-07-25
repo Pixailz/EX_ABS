@@ -131,3 +131,219 @@ todo_later ()
 }
 
 ## (!) NEGATION
+
+# if file exist
+[ -e "file_path" ]
+
+# if file doesn't exist
+[ ! -e "file_path" ]
+
+echo "pass"
+echo $? # 0
+
+! echo "pass"
+echo $? # 1
+
+## (*) Asterisk
+
+# as glob
+echo ./*
+
+# as arithmetic operator
+((a=8*16)) ; echo $a
+
+## (?) QUESTION MARK
+
+# as ternary (yes, yes, C style ternary)
+a=3
+((b = a<100?0:a))
+#          ^ ^
+echo $b # 0
+
+## ($) DOLLAR
+var="test"
+
+# ($) for variables
+echo $var
+# (${}) for parameter expansion
+echo ${var}
+
+# ($'...') quoted string extpansion
+# expand all escaped values
+echo -n $'\x0a'
+echo $'\x01\x02\xfe\xff'
+
+# ($*,$@) positional parameters
+echo ${@} # print all parameters
+
+# ($?) last return value
+echo $? # echo above should have return 0
+
+# ($$) pid of process
+echo $$
+
+## (()) PARENTHESIS
+
+# (()) command grouping, allowing quick variable usage
+a="test"
+( a="another test"; echo $a ) # 'another test'
+echo $a                       # 'test'
+
+# array init
+array=(
+	"first elem"
+	"second elem"
+)
+
+# ((())) integer expansion
+((a=25*10))
+
+## ({}) curly brace
+
+# ({xxx,yyy,zzz,...}) Brace expension
+cp .env{.template,} # copy .env.template over .env
+                    # see here for more infos
+# https://www.gnu.org/software/bash/manual/html_node/Brace-Expansion.html
+
+# ({a..z})extended brace expension
+echo {0..9} # 0 1 2 3 4 5 6 7 8 9
+echo {a..z} # a b c d e f g h i j k l m n o p q r s t u v w x y z
+
+# ({}) code block / inline group
+
+a="test1"
+# can use other variable and modify it, unlike command grouping
+{ a="${a} test2"; }
+
+# Reading file
+{
+	read line1
+	read line2
+} < "/etc/fstab"
+
+echo "First line in $File is:"
+echo "$line1"
+echo
+echo "Second line in $File is:"
+echo "$line2"
+
+# Writing file
+{
+	printf "first line\n"
+	printf "second line\n"
+} > "path_of_the_file"
+
+## ([]) square brace
+
+# ([...]) for test
+[ "10" -eq "0xa" ] && echo pass || echo fail
+# an "==" should be more appropriate here, but for the exemple i use -eq
+
+# ([[...]]) for more flexible test
+[[ "10" -eq "0xa" ]] && echo pass || echo fail
+
+# array element
+array[0]="test"
+
+echo ${array[0]}
+
+## (<,<<,>,>>,..) REDIRECTION
+
+# (>) set stdout to file, erase existant file
+echo pass > file
+echo pass > file
+cat file
+# pass
+
+# (>>) set stdout to file, append existant file
+echo pass >> file
+echo pass >> file
+cat file
+# pass
+# pass
+# pass
+
+# (<) set stdin to file
+cat < "src_file" > "dst_file" # read from src_file and put it in dst_file
+
+# (<<) here doc
+cat << EOFILE > "dst_file" # read from stdin until EOFILE, and put if in dst_file
+a line
+another line
+final line
+EOFILE
+
+# (<<<) here string
+file_str=$(cat /etc/fstab)
+grep -E "^#" <<<${file_str} # set variable as file
+
+# (&>) join stdout and stderr
+type &>/dev/null
+# execute type, mute all output, like so we can silently observe the $? status
+
+# (>&) redirection
+find >&2 2>output_file
+
+# ([i]<>filename) open file, and sign it the fd i
+exec 3<>test
+echo pass >&3 # redirect stdout to the fd 3
+
+# ([i]>&-,[i]<&-) close fd i
+exec 3>&-
+
+# (<(command),>(command)) process substitution
+wc <(grep -E "^#" README.md)
+# same as
+grep -E "^#" README.md | wc
+
+## (>|) FORCED REDIRECTION
+
+## (|) PIPE
+
+echo ls -la | sh
+#  Passes the output of "echo ls -l" to the shell,
+#+ with the same result as a simple "ls -l".
+
+## LOGICAL OPERATION
+
+# (||) OU logic
+[ ! -f "path" ] || [ ! -d "path" ]
+
+# (&&) OU logic
+[ ! -f "path" ] && [ ! -d "path" ]
+
+## (&) BACKGROUND JOBS
+
+# run for loop in background
+for i in $(seq 1 3); do
+	printf "%s " "${i}"
+done &
+
+## (-) HYPHEN
+
+# (-) as short option prefix
+ls -la
+#  ^
+
+# (-) as redirection of stdin to stdout
+file - # await for user input
+
+# (--) as long option prefix
+ls --help
+
+# (--) as end of option, for some command
+printf -- "-"
+
+## (~) TILDE
+
+# (~) as current user $HOME
+echo ~
+
+# (~user) as $HOME of an user
+echo ~root
+
+# (~-) as current directory
+echo ~-
+
+# (~+) as previous current directory
+echo ~+

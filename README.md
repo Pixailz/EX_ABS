@@ -6,7 +6,13 @@ Exercices about Advanced Bash-Scripting book
 1. (EN) [Rev 10](https://tldp.org/LDP/abs/html/)
 1. (EN) [Rev 11](https://hangar118.sdf.org/p/bash-scripting-guide/)
 
-## SHEBANG
+## TODO
+
+1. turn [special_char](./script/3/special_char) into a Mardown
+
+## PRACTICE
+
+### SEBANG
 
 https://www.gnu.org/software/bash/manual/bash.html#Modifying-Shell-Behavior
 

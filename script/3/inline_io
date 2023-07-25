@@ -1,0 +1,41 @@
+#!/bin/bash -eu
+# Reading lines in /etc/fstab.
+
+: '
+File=/etc/fstab
+
+{
+read line1
+read line2
+} < $File
+
+echo "First line in $File is:"
+echo "$line1"
+echo
+echo "Second line in $File is:"
+echo "$line2"
+
+exit 0
+'
+
+# Now, how do you parse the separate fields of each line?
+# Hint: use awk, or . . .
+# . . . Hans-Joerg Diers suggests using the "set" Bash builtin.
+
+FILE_PATH="/etc/fstab"
+
+{
+	# read all the file as the two first line was not interesting enough
+	while read readed; do
+		# check if line isn't commented
+		grep -qe "^#" <<<${readed} && continue
+		line=(${readed})
+		printf "device    %s\n" "${line[0]}"
+		printf "mount dir %s\n" "${line[1]}"
+		printf "type      %s\n" "${line[2]}"
+		printf "options   %s\n" "${line[3]}"
+		printf "dump      %s\n" "${line[4]}"
+		printf "id fsck   %s\n\n" "${line[5]}"
+	done
+} < ${FILE_PATH}
+
